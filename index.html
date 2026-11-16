@@ -1,0 +1,330 @@
+from pathlib import Path
+from PIL import Image
+import html, textwrap, os
+
+base = Path("/mnt/data")
+src = base / "a_wide_cinematic_dark_neon_website_ui_mockup_in.png"
+
+# Create a few gallery crops from the generated Ronaldo visual so the HTML
+# contains several real images without requiring external links.
+img = Image.open(src).convert("RGB")
+w, h = img.size
+crops = {
+    "ronaldo-hero.jpg": (0, 0, w, int(h * 0.62)),
+    "ronaldo-portugal.jpg": (0, int(h * 0.10), int(w * 0.48), int(h * 0.72)),
+    "ronaldo-trophees.jpg": (int(w * 0.43), int(h * 0.12), int(w * 0.78), int(h * 0.78)),
+    "ronaldo-gallery.jpg": (int(w * 0.55), int(h * 0.45), w, int(h * 0.92)),
+}
+for name, box in crops.items():
+    img.crop(box).save(base / name, quality=92)
+
+html_doc = r"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cristiano Ronaldo — Projet</title>
+<meta name="description" content="Projet scolaire en français sur Cristiano Ronaldo : biographie, carrière, palmarès, Portugal, statistiques et moments forts.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#05070d;color:#fff;overflow-x:hidden;
+  background-image:
+    radial-gradient(circle at 20% 10%,rgba(0,110,255,.18),transparent 30%),
+    radial-gradient(circle at 80% 30%,rgba(255,170,0,.13),transparent 30%),
+    linear-gradient(180deg,#03040a 0%,#080b16 55%,#030409 100%);
+}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:#05070d}
+::-webkit-scrollbar-thumb{background:linear-gradient(#f8c600,#ff2638);border-radius:10px}
+
+header{
+ position:fixed;top:0;left:0;width:100%;z-index:50;
+ padding:14px 4vw;display:flex;align-items:center;justify-content:space-between;
+ background:rgba(3,5,10,.72);backdrop-filter:blur(18px);
+ border-bottom:1px solid rgba(255,255,255,.09)
+}
+.logo{font-weight:1000;font-size:28px;letter-spacing:-2px}
+.logo span{color:#f7c600}
+nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+nav a{
+ padding:10px 13px;border:1px solid rgba(255,255,255,.16);border-radius:999px;
+ font-size:13px;font-weight:800;background:rgba(255,255,255,.04);
+ transition:.25s
+}
+nav a:hover{transform:translateY(-3px);border-color:#ffd000;box-shadow:0 0 20px rgba(255,200,0,.35)}
+
+.hero{
+ min-height:100vh;display:flex;align-items:center;position:relative;
+ padding:130px 6vw 70px;overflow:hidden
+}
+.hero:before{
+ content:"";position:absolute;inset:0;
+ background:linear-gradient(90deg,rgba(2,4,10,.95) 0%,rgba(2,4,10,.65) 38%,rgba(2,4,10,.22) 70%,rgba(2,4,10,.8) 100%);
+}
+.hero-bg{
+ position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;filter:saturate(1.15)
+}
+.hero-content{position:relative;z-index:2;max-width:900px}
+.kicker{color:#ffd000;font-weight:900;letter-spacing:4px;text-transform:uppercase;font-size:14px}
+h1{
+ font-size:clamp(54px,10vw,130px);line-height:.84;margin:14px 0;
+ font-weight:1000;text-transform:uppercase;
+ color:#fff;text-shadow:0 8px 0 #8a5f00,0 0 35px rgba(255,190,0,.35)
+}
+h1 span{color:#ffc800}
+.subtitle{font-size:clamp(20px,3vw,34px);font-weight:900;color:#e9e9e9}
+.quote{margin:28px 0;max-width:700px;font-size:18px;line-height:1.6;color:#d5d8df;border-left:4px solid #ffd000;padding-left:18px}
+.buttons{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+ display:inline-block;padding:14px 20px;border-radius:14px;font-weight:900;
+ background:linear-gradient(135deg,#ffd000,#ff7b00);color:#080808;
+ box-shadow:0 0 28px rgba(255,175,0,.28);transition:.25s
+}
+.btn.alt{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25);box-shadow:none}
+.btn:hover{transform:translateY(-4px) scale(1.02)}
+
+section{padding:90px 6vw;position:relative}
+.section-title{text-align:center;margin-bottom:42px}
+.section-title .mini{color:#ffd000;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+.section-title h2{font-size:clamp(34px,5vw,64px);margin:8px 0}
+.section-title p{color:#aeb5c2;max-width:720px;margin:auto;line-height:1.6}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;max-width:1200px;margin:auto}
+.card{
+ position:relative;padding:26px;border-radius:24px;
+ background:linear-gradient(145deg,rgba(20,25,38,.92),rgba(5,8,15,.92));
+ border:1px solid rgba(255,255,255,.11);
+ box-shadow:0 20px 50px rgba(0,0,0,.35);
+ overflow:hidden;transition:.3s
+}
+.card:before{
+ content:"";position:absolute;inset:-2px;
+ background:linear-gradient(135deg,transparent 30%,rgba(255,208,0,.18),transparent 65%);
+ opacity:0;transition:.3s
+}
+.card:hover{transform:translateY(-8px);border-color:rgba(255,208,0,.55);box-shadow:0 25px 60px rgba(255,190,0,.12)}
+.card:hover:before{opacity:1}
+.card>*{position:relative;z-index:1}
+.icon{font-size:34px;margin-bottom:12px}
+.card h3{font-size:23px;margin-bottom:10px}
+.card p,.card li{color:#b9c0cb;line-height:1.65}
+.card ul{padding-left:20px}
+.card strong{color:#fff}
+
+.about{display:grid;grid-template-columns:1fr 1.3fr;gap:30px;max-width:1200px;margin:auto;align-items:center}
+.photo{
+ border-radius:28px;overflow:hidden;border:1px solid rgba(255,208,0,.4);
+ box-shadow:0 0 45px rgba(255,180,0,.12)
+}
+.photo img{width:100%;height:100%;display:block;object-fit:cover}
+.about-text h3{font-size:38px;margin-bottom:15px}
+.about-text p{color:#b9c0cb;line-height:1.8;margin-bottom:14px}
+
+.timeline{max-width:1000px;margin:auto;position:relative}
+.timeline:before{content:"";position:absolute;left:18px;top:0;bottom:0;width:3px;background:linear-gradient(#ffd000,#ff304d,#7a3cff)}
+.event{display:grid;grid-template-columns:50px 1fr;gap:18px;margin-bottom:22px}
+.dot{width:38px;height:38px;border-radius:50%;background:#ffd000;color:#080808;display:grid;place-items:center;font-weight:1000;box-shadow:0 0 25px rgba(255,208,0,.45)}
+.event-box{padding:20px;border-radius:18px;background:#0c101b;border:1px solid rgba(255,255,255,.1)}
+.event-box h3{margin-bottom:6px}
+.event-box p{color:#aeb5c2;line-height:1.6}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;max-width:1100px;margin:auto}
+.stat{padding:25px;text-align:center;border-radius:20px;background:linear-gradient(160deg,#111827,#070a11);border:1px solid rgba(255,255,255,.12)}
+.stat b{display:block;font-size:42px;color:#ffd000}
+.stat span{color:#aeb5c2;font-weight:700}
+
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1200px;margin:auto}
+.gallery figure{height:230px;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.12);position:relative}
+.gallery img{width:100%;height:100%;object-fit:cover;transition:.45s}
+.gallery figure:hover img{transform:scale(1.08)}
+.gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.9));font-weight:900}
+
+footer{text-align:center;padding:45px 20px;border-top:1px solid rgba(255,255,255,.1);background:#03050a}
+footer .names{font-size:20px;font-weight:1000;color:#ffd000;margin:8px 0}
+footer p{color:#9299a7}
+
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s,transform .8s}
+.reveal.show{opacity:1;transform:none}
+
+@media(max-width:850px){
+ header{position:absolute;align-items:flex-start}
+ nav{display:none}
+ .about{grid-template-columns:1fr}
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .gallery{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+ .hero{padding-left:5vw;padding-right:5vw}
+ h1{font-size:58px}
+ .stats,.gallery{grid-template-columns:1fr}
+ .gallery figure{height:260px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <a class="logo" href="#accueil">CR<span>7</span></a>
+  <nav>
+    <a href="#accueil">🏠 Accueil</a>
+    <a href="#qui">👤 Qui est Ronaldo ?</a>
+    <a href="#carriere">⚽ Carrière</a>
+    <a href="#palmares">🏆 Palmarès</a>
+    <a href="#portugal">🇵🇹 Portugal</a>
+    <a href="#stats">📊 Statistiques</a>
+    <a href="#moments">⭐ Moments</a>
+    <a href="#galerie">🖼️ Galerie</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero" id="accueil">
+  <img class="hero-bg" src="ronaldo-hero.jpg" alt="Cristiano Ronaldo">
+  <div class="hero-content">
+    <div class="kicker">Projet scolaire • Football</div>
+    <h1>Cristiano <span>Ronaldo</span></h1>
+    <div class="subtitle">Une légende du football mondial 🇵🇹</div>
+    <p class="quote">« Le talent sans travail ne sert à rien. »<br><small>— Cristiano Ronaldo</small></p>
+    <div class="buttons">
+      <a class="btn" href="#qui">Découvrir son histoire →</a>
+      <a class="btn alt" href="#palmares">Voir ses trophées</a>
+    </div>
+  </div>
+</section>
+
+<section id="qui" class="reveal">
+  <div class="section-title">
+    <div class="mini">Biographie</div>
+    <h2>Qui est Cristiano Ronaldo ?</h2>
+    <p>Un parcours construit grâce au travail, à la discipline et à une ambition exceptionnelle.</p>
+  </div>
+  <div class="about">
+    <div class="photo"><img src="ronaldo-portugal.jpg" alt="Cristiano Ronaldo avec le Portugal"></div>
+    <div class="about-text">
+      <h3>CR7, de Madère au sommet</h3>
+      <p><strong>Nom complet :</strong> Cristiano Ronaldo dos Santos Aveiro</p>
+      <p><strong>Date de naissance :</strong> 5 février 1985</p>
+      <p><strong>Lieu :</strong> Funchal, île de Madère, Portugal</p>
+      <p><strong>Poste :</strong> Attaquant</p>
+      <p><strong>Numéro emblématique :</strong> 7</p>
+      <p>Ronaldo s'est fait connaître au Sporting CP avant de devenir une star mondiale avec Manchester United, le Real Madrid, la Juventus puis Al-Nassr.</p>
+    </div>
+  </div>
+</section>
+
+<section id="carriere" class="reveal">
+  <div class="section-title">
+    <div class="mini">Parcours</div>
+    <h2>Sa carrière</h2>
+    <p>Les grandes étapes d'une carrière exceptionnelle.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="icon">🇵🇹</div><h3>Sporting CP</h3><p>Il commence sa carrière professionnelle au Portugal et attire rapidement l'attention grâce à sa technique.</p></div>
+    <div class="card"><div class="icon">🔴</div><h3>Manchester United</h3><p>Il devient une star internationale, remporte la Ligue des Champions et son premier Ballon d'Or en 2008.</p></div>
+    <div class="card"><div class="icon">⚪</div><h3>Real Madrid</h3><p>Une période historique : nombreux buts, titres européens et quatre Ballons d'Or supplémentaires.</p></div>
+    <div class="card"><div class="icon">⚫</div><h3>Juventus</h3><p>Il poursuit son parcours en Italie et remporte plusieurs trophées nationaux avec la Juventus.</p></div>
+    <div class="card"><div class="icon">🟡</div><h3>Al-Nassr</h3><p>Il poursuit sa carrière en Arabie saoudite et continue de marquer des buts et de battre des records.</p></div>
+  </div>
+</section>
+
+<section id="palmares" class="reveal">
+  <div class="section-title">
+    <div class="mini">Trophées</div>
+    <h2>Palmarès et récompenses</h2>
+    <p>Quelques-uns des titres et distinctions majeurs de Cristiano Ronaldo.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="icon">🏆</div><h3>5 Ballons d'Or</h3><p>2008, 2013, 2014, 2016 et 2017.</p></div>
+    <div class="card"><div class="icon">🌟</div><h3>5 Ligues des Champions</h3><p>1 avec Manchester United et 4 avec le Real Madrid.</p></div>
+    <div class="card"><div class="icon">🇪🇺</div><h3>EURO 2016</h3><p>Champion d'Europe avec le Portugal en 2016.</p></div>
+    <div class="card"><div class="icon">🇵🇹</div><h3>Ligue des Nations</h3><p>Vainqueur avec le Portugal en 2019 et en 2025.</p></div>
+    <div class="card"><div class="icon">🥇</div><h3>Soulier d'Or européen</h3><p>Ronaldo a remporté cette récompense à plusieurs reprises durant sa carrière.</p></div>
+  </div>
+</section>
+
+<section id="portugal" class="reveal">
+  <div class="section-title">
+    <div class="mini">Sélection nationale</div>
+    <h2>Avec le Portugal 🇵🇹</h2>
+    <p>Une histoire internationale qui s'est terminée en 2026 après plus de deux décennies avec la sélection.</p>
+  </div>
+  <div class="about">
+    <div class="photo"><img src="ronaldo-gallery.jpg" alt="Ronaldo et le Portugal"></div>
+    <div class="about-text">
+      <h3>Une légende portugaise</h3>
+      <p>Ronaldo a remporté l'<strong>EURO 2016</strong> et les <strong>Ligue des Nations 2019 et 2025</strong> avec le Portugal.</p>
+      <p>Selon la FIFA, il a terminé sa carrière internationale avec <strong>234 sélections et 146 buts</strong>. Il a aussi marqué lors de six éditions différentes de la Coupe du monde.</p>
+      <p>Il reste l'un des joueurs les plus importants de l'histoire du football portugais.</p>
+    </div>
+  </div>
+</section>
+
+<section id="stats" class="reveal">
+  <div class="section-title">
+    <div class="mini">Records</div>
+    <h2>Statistiques impressionnantes</h2>
+    <p>Quelques records internationaux et européens marquants.</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>234</b><span>sélections avec le Portugal</span></div>
+    <div class="stat"><b>146</b><span>buts internationaux</span></div>
+    <div class="stat"><b>140</b><span>buts en Ligue des Champions</span></div>
+    <div class="stat"><b>183</b><span>matchs en Ligue des Champions</span></div>
+  </div>
+</section>
+
+<section id="moments" class="reveal">
+  <div class="section-title">
+    <div class="mini">Histoire</div>
+    <h2>Moments inoubliables</h2>
+    <p>Quelques dates qui ont marqué la carrière de CR7.</p>
+  </div>
+  <div class="timeline">
+    <div class="event"><div class="dot">1</div><div class="event-box"><h3>2003 — Manchester United</h3><p>Ronaldo rejoint Manchester United et commence à se faire connaître au plus haut niveau.</p></div></div>
+    <div class="event"><div class="dot">2</div><div class="event-box"><h3>2008 — Premier Ballon d'Or</h3><p>Il remporte son premier Ballon d'Or après une saison exceptionnelle avec Manchester United.</p></div></div>
+    <div class="event"><div class="dot">3</div><div class="event-box"><h3>2016 — Champion d'Europe</h3><p>Le Portugal remporte son premier EURO, avec Ronaldo comme capitaine.</p></div></div>
+    <div class="event"><div class="dot">4</div><div class="event-box"><h3>2017 — Cinquième Ballon d'Or</h3><p>Il obtient son cinquième Ballon d'Or après une nouvelle grande saison avec le Real Madrid.</p></div></div>
+    <div class="event"><div class="dot">5</div><div class="event-box"><h3>2026 — Fin de carrière internationale</h3><p>Ronaldo termine son aventure avec le Portugal après 234 sélections et 146 buts.</p></div></div>
+  </div>
+</section>
+
+<section id="galerie" class="reveal">
+  <div class="section-title">
+    <div class="mini">Images</div>
+    <h2>Galerie CR7</h2>
+    <p>Une galerie visuelle intégrée au projet.</p>
+  </div>
+  <div class="gallery">
+    <figure><img src="ronaldo-hero.jpg" alt="Ronaldo"><figcaption>CR7 — La légende</figcaption></figure>
+    <figure><img src="ronaldo-portugal.jpg" alt="Ronaldo Portugal"><figcaption>Avec le Portugal</figcaption></figure>
+    <figure><img src="ronaldo-trophees.jpg" alt="Ronaldo trophées"><figcaption>Les trophées</figcaption></figure>
+    <figure><img src="ronaldo-gallery.jpg" alt="Ronaldo"><figcaption>Moments forts</figcaption></figure>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div style="font-size:42px">👑 CR7</div>
+  <div class="names">Par : mohamed amine elghallal et ayoub touchant</div>
+  <p>Projet sur Cristiano Ronaldo • Merci pour votre attention ❤️</p>
+</footer>
+
+<script>
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')})
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
+"""
+
+html_path = base / "projet_cristiano_ronaldo_mohamed_amine_ayoub.html"
+html_path.write_text(html_doc, encoding="utf-8")
+
+print(f"HTML créé : {html_path}")
+print("Images créées :", ", ".join(crops.keys()))
